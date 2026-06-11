@@ -20,8 +20,29 @@ const COLORS = {
 
 const PIE_COLORS = [COLORS.indigo, COLORS.cyan, COLORS.rose, COLORS.amber];
 
-const CustomTooltip = ({ active, payload, label }) => {
+const CustomTooltip = ({ active, payload, label, isSoporte }) => {
   if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    
+    // Si es la gráfica principal de Soporte, mostramos el desglose completo
+    if (isSoporte && data.caso1 !== undefined) {
+      return (
+        <div className="custom-tooltip">
+          <p className="label">Dia {label}</p>
+          <p style={{ color: COLORS.indigo, marginBottom: '4px' }}>
+            Total Correos: <strong>{data.correosTramitados}</strong>
+          </p>
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '4px', marginTop: '4px' }}>
+            <p style={{ color: COLORS.cyan, fontSize: '0.75rem' }}>Credenciales: <strong>{data.caso1}</strong></p>
+            <p style={{ color: COLORS.amber, fontSize: '0.75rem' }}>Ctas. Bloqueadas: <strong>{data.caso2}</strong></p>
+            <p style={{ color: COLORS.rose, fontSize: '0.75rem' }}>Ctas. Eliminadas: <strong>{data.caso3}</strong></p>
+            <p style={{ color: COLORS.emerald, fontSize: '0.75rem' }}>Gratuidad: <strong>{data.caso4}</strong></p>
+          </div>
+        </div>
+      );
+    }
+
+    // Tooltip normal para las otras gráficas
     return (
       <div className="custom-tooltip">
         <p className="label">Dia {label}</p>
@@ -269,7 +290,7 @@ export default function Dashboard({ onNavigate }) {
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                     <XAxis dataKey="dia" stroke="#475569" tick={{ fontSize: 12 }} />
                     <YAxis stroke="#475569" tick={{ fontSize: 12 }} />
-                    <Tooltip content={<CustomTooltip />} />
+                    <Tooltip content={<CustomTooltip isSoporte={true} />} />
                     <Legend wrapperStyle={{ fontSize: '12px' }} />
                     <Area type="monotone" dataKey="correosTramitados" name="Total Correos" stroke={COLORS.indigo} fill="url(#gradIndigo)" strokeWidth={2} dot={{ r: 3, fill: COLORS.indigo }} />
                     <Area type="monotone" dataKey="caso1" name="Credenciales" stroke={COLORS.cyan} fill="url(#gradCyan)" strokeWidth={1.5} dot={false} />
