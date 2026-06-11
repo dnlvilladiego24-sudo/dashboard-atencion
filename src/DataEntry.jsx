@@ -110,17 +110,10 @@ export default function DataEntry() {
       updated_at: new Date().toISOString(),
     };
 
-    let result;
-    if (isEditing && existingId) {
-      result = await supabase
-        .from('registros_diarios')
-        .update(record)
-        .eq('id', existingId);
-    } else {
-      result = await supabase
-        .from('registros_diarios')
-        .insert(record);
-    }
+    // Usamos upsert para que, si ya existe la fecha, lo actualice automáticamente
+    const result = await supabase
+      .from('registros_diarios')
+      .upsert(record, { onConflict: 'fecha' });
 
     setSaving(false);
 
