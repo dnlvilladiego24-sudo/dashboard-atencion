@@ -169,6 +169,7 @@ function ChartCard({ title, subtitle, tag, tagColor, fullWidth, children }) {
 /* ─── Dashboard ─── */
 export default function Dashboard({ onNavigate }) {
   const [allData, setAllData] = useState(null);
+  const [sortedMonths, setSortedMonths] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -229,8 +230,13 @@ export default function Dashboard({ onNavigate }) {
     });
 
     setAllData(grouped);
-    const months = Object.keys(grouped);
-    if (months.length > 0) setSelectedMonth(months[months.length - 1]);
+    setSortedMonths(months);
+
+    // Seleccionar el mes mas reciente (ultimo de la lista excepto RESUMEN)
+    const mesesReales = months.filter(m => m !== 'RESUMEN 2025');
+    if (mesesReales.length > 0) setSelectedMonth(mesesReales[mesesReales.length - 1]);
+    else if (months.length > 0) setSelectedMonth(months[0]);
+
     setLoading(false);
   }
 
@@ -276,12 +282,24 @@ export default function Dashboard({ onNavigate }) {
     );
   }
 
-  const months = Object.keys(allData);
+  const months = sortedMonths;
   const data = allData[selectedMonth];
+  if (!data) return null;
   const { soporteCorreo, contactCenter, pqrs } = data;
   const hasContactData = contactCenter.totalTramitados > 0;
   const hasPQRSData = pqrs.totalTramitados > 0;
   const hasCasosData = soporteCorreo.casos.some(c => c.value > 0);
+
+  // Si solo hay 1 registro en tendencia, es un mes resumen (sin desglose diario)
+  const isSummaryMonth = soporteCorreo.tendencia.length <= 1;
+
+  // Datos para grafica de barras de resumen
+  const casosSoporteData = [
+    { name: 'Credenciales', value: soporteCorreo.casos.find(c => c.name === 'Credenciales')?.value || 0, color: COLORS.cyan },
+    { name: 'Ctas. Bloqueadas', value: soporteCorreo.casos.find(c => c.name === 'Cuentas Bloqueadas')?.value || 0, color: COLORS.amber },
+    { name: 'Ctas. Eliminadas', value: soporteCorreo.casos.find(c => c.name === 'Cuentas Eliminadas')?.value || 0, color: COLORS.rose },
+    { name: 'Gratuidad', value: soporteCorreo.casos.find(c => c.name === 'Gratuidad')?.value || 0, color: COLORS.emerald },
+  ].filter(c => c.value > 0);
 
   return (
     <div className="app-layout">
@@ -289,7 +307,9 @@ export default function Dashboard({ onNavigate }) {
 
       <main className="main-content">
         <div className="topbar">
-          <span className="topbar-title">Dashboard &mdash; {selectedMonth} 2026</span>
+          <span className="topbar-title">
+            Dashboard &mdash; {selectedMonth === 'RESUMEN 2025' ? '2025 — Total Anual' : `${selectedMonth} 2026`}
+          </span>
           <div className="topbar-actions">
             <div className="badge">
               <span className="badge-dot"></span>
@@ -345,7 +365,102 @@ export default function Dashboard({ onNavigate }) {
               />
             </motion.div>
 
-            {/* Charts */}
+            {/* ── VISTA RESUMEN (meses sin desglose diario) ── */}
+            {isSummaryMonth ? (
+              <motion.div
+                className="charts-grid"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                {/* Banner informativo */}
+                <motion.div
+                  variants={chartVariants}
+                  style={{
+                    gridColumn: '1 / -1',
+                    background: 'rgba(99,102,241,0.08)',
+                    border: '1px solid rgba(99,102,241,0.2)',
+                    borderRadius: '12px',
+                    padding: '1rem 1.5rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                    color: '#a78bfa',
+                    fontSize: '0.85rem',
+                  }}
+                >
+                  <TrendingUp size={18} />
+                  <span>
+                    <strong>Vista de resumen mensual:</strong> Este periodo no tiene desglose por día.
+                    Se muestra el total acumulado del mes completo.
+                  </span>
+                </motion.div>
+
+                {/* Barras de casos de Soporte */}
+                <ChartCard title="Desglose por Tipo de Caso" subtitle="Soporte Correo — total del periodo" tag="Barras" tagColor="indigo" fullWidth>
+                  {casosSoporteData.length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={casosSoporteData}
+                        layout="vertical"
+                        margin={{ top: 5, right: 40, bottom: 5, left: 20 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" horizontal={false} />
+                        <XAxis type="number" stroke="#475569" tick={{ fontSize: 12 }} />
+                        <YAxis type="category" dataKey="name" stroke="#475569" tick={{ fontSize: 12 }} width={120} />
+                        <Tooltip
+                          contentStyle={{ backgroundColor: '#111827', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px', color: '#f1f5f9', fontSize: '0.8rem' }}
+                          cursor={{ fill: 'rgba(255,255,255,0.03)' }}
+                        />
+                        <Bar dataKey="value" name="Casos" radius={[0, 6, 6, 0]} isAnimationActive animationDuration={1400} animationEasing="ease-out">
+                          {casosSoporteData.map((entry, i) => (
+                            <Cell key={i} fill={entry.color} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  ) : <EmptyState message="Sin desglose de casos para este periodo" />}
+                </ChartCard>
+
+                {/* Donut de distribución */}
+                <ChartCard title="Distribucion de Casos" subtitle="Soporte Correo por tipo" tag="Donut" tagColor="rose">
+                  {hasCasosData ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={soporteCorreo.casos.filter(c => c.value > 0)}
+                          cx="50%" cy="50%"
+                          innerRadius={70} outerRadius={105}
+                          paddingAngle={4} dataKey="value"
+                          label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
+                          isAnimationActive animationBegin={300} animationDuration={1200} animationEasing="ease-out"
+                        >
+                          {soporteCorreo.casos.filter(c => c.value > 0).map((_, i) => (
+                            <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip contentStyle={{ backgroundColor: '#111827', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px', color: '#f1f5f9', fontSize: '0.8rem' }} />
+                        <Legend wrapperStyle={{ fontSize: '12px' }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  ) : <EmptyState message="Sin datos de casos" />}
+                </ChartCard>
+
+                {/* Tarjeta resumen PQRS */}
+                <ChartCard title="PQRS del Periodo" subtitle="Total de peticiones, quejas y reclamos" tag="Total" tagColor="amber">
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '0.5rem' }}>
+                    <FileWarning size={40} color={COLORS.amber} strokeWidth={1.5} />
+                    <div style={{ fontSize: '3.5rem', fontWeight: 800, color: COLORS.amber, lineHeight: 1 }}>
+                      <AnimatedNumber value={pqrs.totalTramitados} />
+                    </div>
+                    <p style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Correos PQRS tramitados</p>
+                  </div>
+                </ChartCard>
+              </motion.div>
+
+            ) : (
+
+            /* ── VISTA NORMAL (meses con desglose diario) ── */
             <motion.div
               className="charts-grid"
               variants={containerVariants}
@@ -371,19 +486,8 @@ export default function Dashboard({ onNavigate }) {
                     <YAxis stroke="#475569" tick={{ fontSize: 12 }} />
                     <Tooltip content={<CustomTooltip isSoporte={true} />} />
                     <Legend wrapperStyle={{ fontSize: '12px' }} />
-                    <Area
-                      type="monotone" dataKey="correosTramitados" name="Total Correos"
-                      stroke={COLORS.indigo} fill="url(#gradIndigo)" strokeWidth={2.5}
-                      dot={{ r: 3, fill: COLORS.indigo }}
-                      activeDot={{ r: 7, fill: COLORS.indigo, stroke: '#fff', strokeWidth: 2 }}
-                      isAnimationActive={true} animationDuration={1800} animationEasing="ease-out"
-                    />
-                    <Area
-                      type="monotone" dataKey="caso1" name="Credenciales"
-                      stroke={COLORS.cyan} fill="url(#gradCyan)" strokeWidth={1.5} dot={false}
-                      activeDot={{ r: 5, fill: COLORS.cyan }}
-                      isAnimationActive={true} animationDuration={2200} animationEasing="ease-out"
-                    />
+                    <Area type="monotone" dataKey="correosTramitados" name="Total Correos" stroke={COLORS.indigo} fill="url(#gradIndigo)" strokeWidth={2.5} dot={{ r: 3, fill: COLORS.indigo }} activeDot={{ r: 7, fill: COLORS.indigo, stroke: '#fff', strokeWidth: 2 }} isAnimationActive animationDuration={1800} animationEasing="ease-out" />
+                    <Area type="monotone" dataKey="caso1" name="Credenciales" stroke={COLORS.cyan} fill="url(#gradCyan)" strokeWidth={1.5} dot={false} activeDot={{ r: 5, fill: COLORS.cyan }} isAnimationActive animationDuration={2200} animationEasing="ease-out" />
                   </AreaChart>
                 </ResponsiveContainer>
               </ChartCard>
@@ -393,21 +497,8 @@ export default function Dashboard({ onNavigate }) {
                 {hasCasosData ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
-                      <Pie
-                        data={soporteCorreo.casos.filter(c => c.value > 0)}
-                        cx="50%" cy="50%"
-                        innerRadius={70} outerRadius={105}
-                        paddingAngle={4} dataKey="value"
-                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                        labelLine={{ stroke: '#475569', strokeWidth: 1 }}
-                        isAnimationActive={true}
-                        animationBegin={300}
-                        animationDuration={1200}
-                        animationEasing="ease-out"
-                      >
-                        {soporteCorreo.casos.filter(c => c.value > 0).map((_, i) => (
-                          <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
-                        ))}
+                      <Pie data={soporteCorreo.casos.filter(c => c.value > 0)} cx="50%" cy="50%" innerRadius={70} outerRadius={105} paddingAngle={4} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={{ stroke: '#475569', strokeWidth: 1 }} isAnimationActive animationBegin={300} animationDuration={1200} animationEasing="ease-out">
+                        {soporteCorreo.casos.filter(c => c.value > 0).map((_, i) => (<Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />))}
                       </Pie>
                       <Tooltip contentStyle={{ backgroundColor: '#111827', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px', color: '#f1f5f9', fontSize: '0.8rem' }} />
                     </PieChart>
@@ -424,11 +515,7 @@ export default function Dashboard({ onNavigate }) {
                       <XAxis dataKey="dia" stroke="#475569" tick={{ fontSize: 12 }} />
                       <YAxis stroke="#475569" tick={{ fontSize: 12 }} />
                       <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
-                      <Bar
-                        dataKey="correosTramitados" name="Correos CC"
-                        fill={COLORS.violet} radius={[4, 4, 0, 0]}
-                        isAnimationActive={true} animationDuration={1400} animationEasing="ease-out"
-                      />
+                      <Bar dataKey="correosTramitados" name="Correos CC" fill={COLORS.violet} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={1400} animationEasing="ease-out" />
                     </BarChart>
                   </ResponsiveContainer>
                 ) : <EmptyState message="Sin datos de Contact Center para este mes" />}
@@ -450,18 +537,13 @@ export default function Dashboard({ onNavigate }) {
                       <YAxis stroke="#475569" tick={{ fontSize: 12 }} />
                       <Tooltip content={<CustomTooltip />} />
                       <Legend wrapperStyle={{ fontSize: '12px' }} />
-                      <Area
-                        type="monotone" dataKey="correosTramitados" name="Correos PQRS"
-                        stroke={COLORS.amber} fill="url(#gradAmber)" strokeWidth={2.5}
-                        dot={{ r: 3, fill: COLORS.amber }}
-                        activeDot={{ r: 7, fill: COLORS.amber, stroke: '#fff', strokeWidth: 2 }}
-                        isAnimationActive={true} animationDuration={1800} animationEasing="ease-out"
-                      />
+                      <Area type="monotone" dataKey="correosTramitados" name="Correos PQRS" stroke={COLORS.amber} fill="url(#gradAmber)" strokeWidth={2.5} dot={{ r: 3, fill: COLORS.amber }} activeDot={{ r: 7, fill: COLORS.amber, stroke: '#fff', strokeWidth: 2 }} isAnimationActive animationDuration={1800} animationEasing="ease-out" />
                     </AreaChart>
                   </ResponsiveContainer>
                 ) : <EmptyState message="Sin datos PQRS para este mes" />}
               </ChartCard>
             </motion.div>
+            )}
           </motion.div>
         </AnimatePresence>
       </main>
@@ -510,9 +592,32 @@ export function Sidebar({ months, selectedMonth, onSelectMonth, onNavigate, acti
 
       {months.length > 0 && (
         <>
-          <p className="sidebar-section-title">Meses Disponibles</p>
+          {/* Año anterior (RESUMEN 2025) */}
+          {months.includes('RESUMEN 2025') && (
+            <>
+              <p className="sidebar-section-title">Año Anterior</p>
+              <ul className="sidebar-nav">
+                <motion.li
+                  key="RESUMEN 2025"
+                  className={`sidebar-nav-item ${selectedMonth === 'RESUMEN 2025' && activePage === 'dashboard' ? 'active' : ''}`}
+                  onClick={() => { onSelectMonth('RESUMEN 2025'); onNavigate('dashboard'); }}
+                  initial={{ opacity: 0, x: -16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.05, duration: 0.3 }}
+                  whileHover={{ x: 4 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  <TrendingUp size={18} />
+                  2025 — Total anual
+                </motion.li>
+              </ul>
+            </>
+          )}
+
+          {/* Meses del año actual */}
+          <p className="sidebar-section-title">2026 — Meses</p>
           <ul className="sidebar-nav">
-            {months.map((month, i) => (
+            {months.filter(m => m !== 'RESUMEN 2025').map((month, i) => (
               <motion.li
                 key={month}
                 className={`sidebar-nav-item ${selectedMonth === month && activePage === 'dashboard' ? 'active' : ''}`}
