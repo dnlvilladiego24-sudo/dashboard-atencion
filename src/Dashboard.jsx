@@ -413,8 +413,8 @@ export default function Dashboard({ onNavigate }) {
                         margin={{ top: 5, right: 40, bottom: 5, left: 20 }}
                       >
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" horizontal={false} />
-                        <XAxis type="number" stroke="#475569" tick={{ fontSize: 12 }} />
-                        <YAxis type="category" dataKey="name" stroke="#475569" tick={{ fontSize: 12 }} width={120} />
+                        <XAxis type="number" stroke="#94a3b8" tick={{ fontSize: 12 }} />
+                        <YAxis type="category" dataKey="name" stroke="#94a3b8" tick={{ fontSize: 12 }} width={120} />
                         <Tooltip
                           contentStyle={{ backgroundColor: '#111827', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px', color: '#f1f5f9', fontSize: '0.8rem' }}
                           cursor={{ fill: 'rgba(255,255,255,0.03)' }}
@@ -489,8 +489,8 @@ export default function Dashboard({ onNavigate }) {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                    <XAxis dataKey="dia" stroke="#475569" tick={{ fontSize: 12 }} />
-                    <YAxis stroke="#475569" tick={{ fontSize: 12 }} />
+                    <XAxis dataKey="dia" stroke="#94a3b8" tick={{ fontSize: 12 }} />
+                    <YAxis stroke="#94a3b8" tick={{ fontSize: 12 }} />
                     <Tooltip content={<CustomTooltip isSoporte={true} />} />
                     <Legend wrapperStyle={{ fontSize: '12px' }} />
                     <Area type="monotone" dataKey="correosTramitados" name="Total Correos" stroke={COLORS.indigo} fill="url(#gradIndigo)" strokeWidth={2.5} dot={{ r: 3, fill: COLORS.indigo }} activeDot={{ r: 7, fill: COLORS.indigo, stroke: '#fff', strokeWidth: 2 }} isAnimationActive animationDuration={1800} animationEasing="ease-out" />
@@ -519,8 +519,8 @@ export default function Dashboard({ onNavigate }) {
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={contactCenter.tendencia.filter(d => d.correosTramitados > 0)} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                      <XAxis dataKey="dia" stroke="#475569" tick={{ fontSize: 12 }} />
-                      <YAxis stroke="#475569" tick={{ fontSize: 12 }} />
+                      <XAxis dataKey="dia" stroke="#94a3b8" tick={{ fontSize: 12 }} />
+                      <YAxis stroke="#94a3b8" tick={{ fontSize: 12 }} />
                       <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
                       <Bar dataKey="correosTramitados" name="Correos CC" fill={COLORS.violet} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={1400} animationEasing="ease-out" />
                     </BarChart>
@@ -540,8 +540,8 @@ export default function Dashboard({ onNavigate }) {
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                      <XAxis dataKey="dia" stroke="#475569" tick={{ fontSize: 12 }} />
-                      <YAxis stroke="#475569" tick={{ fontSize: 12 }} />
+                      <XAxis dataKey="dia" stroke="#94a3b8" tick={{ fontSize: 12 }} />
+                      <YAxis stroke="#94a3b8" tick={{ fontSize: 12 }} />
                       <Tooltip content={<CustomTooltip />} />
                       <Legend wrapperStyle={{ fontSize: '12px' }} />
                       <Area type="monotone" dataKey="correosTramitados" name="Correos PQRS" stroke={COLORS.amber} fill="url(#gradAmber)" strokeWidth={2.5} dot={{ r: 3, fill: COLORS.amber }} activeDot={{ r: 7, fill: COLORS.amber, stroke: '#fff', strokeWidth: 2 }} isAnimationActive animationDuration={1800} animationEasing="ease-out" />
