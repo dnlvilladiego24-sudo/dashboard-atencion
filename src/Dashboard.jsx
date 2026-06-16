@@ -230,6 +230,13 @@ export default function Dashboard({ onNavigate }) {
     });
 
     setAllData(grouped);
+
+    // Ordenar: RESUMEN 2025 primero, luego meses 2026 en orden calendario
+    const ORDEN_MESES = ['RESUMEN 2025', 'ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
+    const months = Object.keys(grouped).sort(
+      (a, b) => ORDEN_MESES.indexOf(a) - ORDEN_MESES.indexOf(b)
+    );
+
     setSortedMonths(months);
 
     // Seleccionar el mes mas reciente (ultimo de la lista excepto RESUMEN)
