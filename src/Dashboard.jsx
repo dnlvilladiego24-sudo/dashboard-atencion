@@ -19,7 +19,24 @@ const COLORS = {
   violet: '#a78bfa',
 };
 
-const PIE_COLORS = [COLORS.indigo, COLORS.cyan, COLORS.rose, COLORS.amber];
+const PIE_COLORS = [COLORS.cyan, COLORS.amber, COLORS.rose, COLORS.emerald];
+
+// Paleta neón refinada: vibrante pero elegante, un tono distinto por mes
+const NEON_MONTHS = {
+  'RESUMEN 2025': '#818cf8', // indigo
+  'ENERO': '#38bdf8',        // azul cielo
+  'FEBRERO': '#f472b6',      // rosa
+  'MARZO': '#4ade80',        // verde
+  'ABRIL': '#fb923c',        // naranja
+  'MAYO': '#a78bfa',         // violeta
+  'JUNIO': '#facc15',        // amarillo
+  'JULIO': '#fb7185',        // coral
+  'AGOSTO': '#2dd4bf',       // turquesa
+  'SEPTIEMBRE': '#a3e635',   // lima
+  'OCTUBRE': '#f97316',      // naranja intenso
+  'NOVIEMBRE': '#c084fc',    // púrpura
+  'DICIEMBRE': '#22d3ee',    // cian
+};
 
 /* ─── Animated Counter ─── */
 function useCountUp(target, duration = 1200) {
@@ -46,39 +63,43 @@ function AnimatedNumber({ value }) {
 }
 
 /* ─── Custom Tooltip ─── */
+const glow = (c) => ({ color: c, textShadow: `0 0 8px ${c}, 0 0 16px ${c}80` });
+
 const CustomTooltip = ({ active, payload, label, isSoporte }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     if (isSoporte && data.caso1 !== undefined) {
       return (
         <motion.div
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="custom-tooltip"
+          initial={{ opacity: 0, y: 6, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.18 }}
+          className="neon-tooltip"
         >
-          <p className="label">Dia {label}</p>
-          <p style={{ color: COLORS.indigo, marginBottom: '4px' }}>
+          <p className="recharts-tooltip-label">Día {label}</p>
+          <p style={{ ...glow(COLORS.indigo), marginBottom: '6px', fontSize: '0.85rem' }}>
             Total Correos: <strong>{data.correosTramitados}</strong>
           </p>
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '4px', marginTop: '4px' }}>
-            <p style={{ color: COLORS.cyan, fontSize: '0.75rem' }}>Credenciales: <strong>{data.caso1}</strong></p>
-            <p style={{ color: COLORS.amber, fontSize: '0.75rem' }}>Ctas. Bloqueadas: <strong>{data.caso2}</strong></p>
-            <p style={{ color: COLORS.rose, fontSize: '0.75rem' }}>Ctas. Eliminadas: <strong>{data.caso3}</strong></p>
-            <p style={{ color: COLORS.emerald, fontSize: '0.75rem' }}>Gratuidad: <strong>{data.caso4}</strong></p>
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '6px', marginTop: '2px', display: 'grid', gap: '3px' }}>
+            <p style={{ ...glow(COLORS.cyan), fontSize: '0.75rem' }}>Credenciales: <strong>{data.caso1}</strong></p>
+            <p style={{ ...glow(COLORS.amber), fontSize: '0.75rem' }}>Ctas. Bloqueadas: <strong>{data.caso2}</strong></p>
+            <p style={{ ...glow(COLORS.rose), fontSize: '0.75rem' }}>Ctas. Eliminadas: <strong>{data.caso3}</strong></p>
+            <p style={{ ...glow(COLORS.emerald), fontSize: '0.75rem' }}>Gratuidad: <strong>{data.caso4}</strong></p>
           </div>
         </motion.div>
       );
     }
     return (
       <motion.div
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="custom-tooltip"
+        initial={{ opacity: 0, y: 6, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.18 }}
+        className="neon-tooltip"
       >
-        <p className="label">Dia {label}</p>
+        <p className="recharts-tooltip-label">{label ? `Día ${label}` : ''}</p>
         {payload.map((entry, i) => (
-          <p key={i} style={{ color: entry.color }}>
-            {entry.name}: <strong>{entry.value}</strong>
+          <p key={i} className="recharts-tooltip-item-name" style={glow(entry.color)}>
+            {entry.name}: <span className="recharts-tooltip-item-value" style={glow(entry.color)}>{entry.value}</span>
           </p>
         ))}
       </motion.div>
@@ -128,14 +149,14 @@ function KpiCard({ label, value, days, icon, colorClass, delay = 0 }) {
     <motion.div
       className={`kpi-card ${colorClass}`}
       variants={cardVariants}
-      whileHover={{ scale: 1.03, y: -4, transition: { duration: 0.2 } }}
+      whileHover={{ scale: 1.03, y: -4, transition: { duration: 0.2 }, borderColor: 'var(--neon-color)', boxShadow: '0 0 15px var(--neon-color-dim)' }}
       whileTap={{ scale: 0.98 }}
     >
       <div className="kpi-header">
         <span className="kpi-label">{label}</span>
         <div className={`kpi-icon ${colorClass}`}>{icon}</div>
       </div>
-      <div className="kpi-value">
+      <div className="kpi-value neon-text">
         <AnimatedNumber value={value} />
       </div>
       <span className="kpi-subtitle">
@@ -152,11 +173,11 @@ function ChartCard({ title, subtitle, tag, tagColor, fullWidth, children }) {
     <motion.div
       className={`chart-card${fullWidth ? ' full-width' : ''}`}
       variants={chartVariants}
-      whileHover={{ borderColor: 'rgba(99,102,241,0.35)', transition: { duration: 0.2 } }}
+      whileHover={{ borderColor: 'var(--neon-color)', boxShadow: '0 0 15px var(--neon-color-dim)', transition: { duration: 0.2 } }}
     >
       <div className="chart-header">
         <div>
-          <div className="chart-title">{title}</div>
+          <div className="chart-title neon-text">{title}</div>
           <div className="chart-subtitle">{subtitle}</div>
         </div>
         <span className={`chart-tag ${tagColor}`}>{tag}</span>
@@ -308,8 +329,10 @@ export default function Dashboard({ onNavigate }) {
     { name: 'Gratuidad', value: soporteCorreo.casos.find(c => c.name === 'Gratuidad')?.value || 0, color: COLORS.emerald },
   ].filter(c => c.value > 0);
 
+  const currentNeon = NEON_MONTHS[selectedMonth] || '#6366f1';
+
   return (
-    <div className="app-layout">
+    <div className="app-layout" style={{ '--neon-color': currentNeon, '--neon-color-dim': currentNeon + '40' }}>
       <Sidebar months={months} selectedMonth={selectedMonth} onSelectMonth={setSelectedMonth} onNavigate={onNavigate} activePage="dashboard" />
 
       <main className="main-content">
@@ -415,10 +438,7 @@ export default function Dashboard({ onNavigate }) {
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" horizontal={false} />
                         <XAxis type="number" stroke="#94a3b8" tick={{ fontSize: 14 }} />
                         <YAxis type="category" dataKey="name" stroke="#94a3b8" tick={{ fontSize: 14 }} width={140} />
-                        <Tooltip
-                          contentStyle={{ backgroundColor: '#111827', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px', color: '#f1f5f9', fontSize: '0.8rem' }}
-                          cursor={{ fill: 'rgba(255,255,255,0.03)' }}
-                        />
+                        <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
                         <Bar dataKey="value" name="Casos" radius={[0, 6, 6, 0]} isAnimationActive animationDuration={1400} animationEasing="ease-out">
                           {casosSoporteData.map((entry, i) => (
                             <Cell key={i} fill={entry.color} />
@@ -446,7 +466,7 @@ export default function Dashboard({ onNavigate }) {
                             <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                           ))}
                         </Pie>
-                        <Tooltip contentStyle={{ backgroundColor: '#111827', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px', color: '#f1f5f9', fontSize: '0.8rem' }} />
+                        <Tooltip content={<CustomTooltip />} />
                         <Legend wrapperStyle={{ fontSize: '12px' }} />
                       </PieChart>
                     </ResponsiveContainer>
@@ -479,12 +499,12 @@ export default function Dashboard({ onNavigate }) {
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={soporteCorreo.tendencia} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                     <defs>
-                      <linearGradient id="gradIndigo" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={COLORS.indigo} stopOpacity={0.35} />
-                        <stop offset="95%" stopColor={COLORS.indigo} stopOpacity={0} />
+                      <linearGradient id="gradMonth" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={currentNeon} stopOpacity={0.4} />
+                        <stop offset="95%" stopColor={currentNeon} stopOpacity={0} />
                       </linearGradient>
                       <linearGradient id="gradCyan" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={COLORS.cyan} stopOpacity={0.2} />
+                        <stop offset="5%" stopColor={COLORS.cyan} stopOpacity={0.18} />
                         <stop offset="95%" stopColor={COLORS.cyan} stopOpacity={0} />
                       </linearGradient>
                     </defs>
@@ -493,7 +513,7 @@ export default function Dashboard({ onNavigate }) {
                     <YAxis stroke="#94a3b8" tick={{ fontSize: 14 }} />
                     <Tooltip content={<CustomTooltip isSoporte={true} />} />
                     <Legend wrapperStyle={{ fontSize: '12px' }} />
-                    <Area type="monotone" dataKey="correosTramitados" name="Total Correos" stroke={COLORS.indigo} fill="url(#gradIndigo)" strokeWidth={2.5} dot={{ r: 3, fill: COLORS.indigo }} activeDot={{ r: 7, fill: COLORS.indigo, stroke: '#fff', strokeWidth: 2 }} isAnimationActive animationDuration={1800} animationEasing="ease-out" />
+                    <Area type="monotone" dataKey="correosTramitados" name="Total Correos" stroke={currentNeon} fill="url(#gradMonth)" strokeWidth={2.5} dot={{ r: 3, fill: currentNeon }} activeDot={{ r: 7, fill: currentNeon, stroke: '#fff', strokeWidth: 2 }} style={{ filter: `drop-shadow(0 0 6px ${currentNeon}90)` }} isAnimationActive animationDuration={1800} animationEasing="ease-out" />
                     <Area type="monotone" dataKey="caso1" name="Credenciales" stroke={COLORS.cyan} fill="url(#gradCyan)" strokeWidth={1.5} dot={false} activeDot={{ r: 5, fill: COLORS.cyan }} isAnimationActive animationDuration={2200} animationEasing="ease-out" />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -507,7 +527,7 @@ export default function Dashboard({ onNavigate }) {
                       <Pie data={soporteCorreo.casos.filter(c => c.value > 0)} cx="50%" cy="50%" innerRadius={70} outerRadius={105} paddingAngle={4} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={{ stroke: '#475569', strokeWidth: 1 }} isAnimationActive animationBegin={300} animationDuration={1200} animationEasing="ease-out">
                         {soporteCorreo.casos.filter(c => c.value > 0).map((_, i) => (<Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />))}
                       </Pie>
-                      <Tooltip contentStyle={{ backgroundColor: '#111827', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px', color: '#f1f5f9', fontSize: '0.8rem' }} />
+                      <Tooltip content={<CustomTooltip />} />
                     </PieChart>
                   </ResponsiveContainer>
                 ) : <EmptyState message="Sin datos de casos para este mes" />}
@@ -522,7 +542,7 @@ export default function Dashboard({ onNavigate }) {
                       <XAxis dataKey="dia" stroke="#94a3b8" tick={{ fontSize: 14 }} />
                       <YAxis stroke="#94a3b8" tick={{ fontSize: 14 }} />
                       <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
-                      <Bar dataKey="correosTramitados" name="Correos CC" fill={COLORS.violet} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={1400} animationEasing="ease-out" />
+                      <Bar dataKey="correosTramitados" name="Correos CC" fill={currentNeon} radius={[4, 4, 0, 0]} style={{ filter: `drop-shadow(0 0 5px ${currentNeon}80)` }} isAnimationActive animationDuration={1400} animationEasing="ease-out" />
                     </BarChart>
                   </ResponsiveContainer>
                 ) : <EmptyState message="Sin datos de Contact Center para este mes" />}
@@ -534,9 +554,9 @@ export default function Dashboard({ onNavigate }) {
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={pqrs.tendencia.filter(d => d.correosTramitados > 0)} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                       <defs>
-                        <linearGradient id="gradAmber" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={COLORS.amber} stopOpacity={0.3} />
-                          <stop offset="95%" stopColor={COLORS.amber} stopOpacity={0} />
+                        <linearGradient id="gradPqrs" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={currentNeon} stopOpacity={0.32} />
+                          <stop offset="95%" stopColor={currentNeon} stopOpacity={0} />
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
@@ -544,7 +564,7 @@ export default function Dashboard({ onNavigate }) {
                       <YAxis stroke="#94a3b8" tick={{ fontSize: 14 }} />
                       <Tooltip content={<CustomTooltip />} />
                       <Legend wrapperStyle={{ fontSize: '12px' }} />
-                      <Area type="monotone" dataKey="correosTramitados" name="Correos PQRS" stroke={COLORS.amber} fill="url(#gradAmber)" strokeWidth={2.5} dot={{ r: 3, fill: COLORS.amber }} activeDot={{ r: 7, fill: COLORS.amber, stroke: '#fff', strokeWidth: 2 }} isAnimationActive animationDuration={1800} animationEasing="ease-out" />
+                      <Area type="monotone" dataKey="correosTramitados" name="Correos PQRS" stroke={currentNeon} fill="url(#gradPqrs)" strokeWidth={2.5} dot={{ r: 3, fill: currentNeon }} activeDot={{ r: 7, fill: currentNeon, stroke: '#fff', strokeWidth: 2 }} style={{ filter: `drop-shadow(0 0 6px ${currentNeon}90)` }} isAnimationActive animationDuration={1800} animationEasing="ease-out" />
                     </AreaChart>
                   </ResponsiveContainer>
                 ) : <EmptyState message="Sin datos PQRS para este mes" />}
@@ -624,21 +644,26 @@ export function Sidebar({ months, selectedMonth, onSelectMonth, onNavigate, acti
           {/* Meses del año actual */}
           <p className="sidebar-section-title">2026 — Meses</p>
           <ul className="sidebar-nav">
-            {months.filter(m => m !== 'RESUMEN 2025').map((month, i) => (
-              <motion.li
-                key={month}
-                className={`sidebar-nav-item ${selectedMonth === month && activePage === 'dashboard' ? 'active' : ''}`}
-                onClick={() => { onSelectMonth(month); onNavigate('dashboard'); }}
-                initial={{ opacity: 0, x: -16 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.07, duration: 0.3 }}
-                whileHover={{ x: 4 }}
-                whileTap={{ scale: 0.97 }}
-              >
-                <Calendar size={18} />
-                {month}
-              </motion.li>
-            ))}
+            {months.filter(m => m !== 'RESUMEN 2025').map((month, i) => {
+              const mColor = NEON_MONTHS[month] || '#6366f1';
+              const isActive = selectedMonth === month && activePage === 'dashboard';
+              return (
+                <motion.li
+                  key={month}
+                  className={`sidebar-nav-item month-item ${isActive ? 'active' : ''}`}
+                  style={isActive ? { '--month-color': mColor, color: mColor, background: `${mColor}1f`, boxShadow: `inset 3px 0 0 ${mColor}, 0 0 12px ${mColor}30` } : { '--month-color': mColor }}
+                  onClick={() => { onSelectMonth(month); onNavigate('dashboard'); }}
+                  initial={{ opacity: 0, x: -16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.06, duration: 0.3 }}
+                  whileHover={{ x: 4 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  <span className="month-dot" style={{ background: mColor, boxShadow: `0 0 8px ${mColor}` }} />
+                  {month}
+                </motion.li>
+              );
+            })}
           </ul>
         </>
       )}

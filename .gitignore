@@ -14,3 +14,4 @@ dist/
 *.py
 *.xlsx
 *.log
+_backup_*/
