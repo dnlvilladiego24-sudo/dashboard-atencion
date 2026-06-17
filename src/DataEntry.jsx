@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './lib/supabase';
-import { Save, CheckCircle, AlertCircle, CalendarDays, Mail, Headset, FileWarning, Loader2 } from 'lucide-react';
+import { Save, CheckCircle, AlertCircle, CalendarDays, Mail, Headset, FileWarning, LifeBuoy, Loader2 } from 'lucide-react';
 
 const MESES = ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
 
@@ -37,6 +37,7 @@ export default function DataEntry() {
     cc_caso2: '',
     cc_caso3: '',
     pqrs_correos: '',
+    mesa_correos: '',
   });
 
   // Verificar si ya existe un registro para la fecha seleccionada
@@ -63,6 +64,7 @@ export default function DataEntry() {
           cc_caso2: data.cc_caso2 || '',
           cc_caso3: data.cc_caso3 || '',
           pqrs_correos: data.pqrs_correos || '',
+          mesa_correos: data.mesa_correos || '',
         });
       } else {
         setIsEditing(false);
@@ -78,6 +80,7 @@ export default function DataEntry() {
           cc_caso2: '',
           cc_caso3: '',
           pqrs_correos: '',
+          mesa_correos: '',
         });
       }
     }
@@ -107,6 +110,7 @@ export default function DataEntry() {
       cc_caso2: parseInt(form.cc_caso2) || 0,
       cc_caso3: parseInt(form.cc_caso3) || 0,
       pqrs_correos: parseInt(form.pqrs_correos) || 0,
+      mesa_correos: parseInt(form.mesa_correos) || 0,
       updated_at: new Date().toISOString(),
     };
 
@@ -258,6 +262,22 @@ export default function DataEntry() {
               <input type="number" min="0" placeholder="0"
                 value={form.pqrs_correos}
                 onChange={(e) => handleChange('pqrs_correos', e.target.value)} />
+            </div>
+          </div>
+        </div>
+
+        {/* Mesa de Ayuda */}
+        <div className="form-section">
+          <div className="form-section-header mesa">
+            <LifeBuoy size={18} />
+            <span>Mesa de Ayuda</span>
+          </div>
+          <div className="form-row">
+            <div className="form-field">
+              <label>Total Correos Tramitados</label>
+              <input type="number" min="0" placeholder="0"
+                value={form.mesa_correos}
+                onChange={(e) => handleChange('mesa_correos', e.target.value)} />
             </div>
           </div>
         </div>

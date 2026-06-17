@@ -65,6 +65,11 @@ function App() {
                   Conectado a Supabase<br />
                   Datos en tiempo real
                 </p>
+                <p className="sidebar-credits">
+                  Desarrollado por<br />
+                  <strong>Daniel Villadiego Abad</strong><br />
+                  <strong>Nicolás David Dussan Quiroga</strong>
+                </p>
               </div>
             </motion.aside>
 

@@ -6,7 +6,7 @@ import {
 } from 'recharts';
 import {
   LayoutDashboard, Mail, Headset, FileWarning, TrendingUp, Calendar,
-  BarChart3, Activity, PlusCircle
+  BarChart3, Activity, PlusCircle, LifeBuoy
 } from 'lucide-react';
 import { supabase } from './lib/supabase';
 
@@ -213,6 +213,7 @@ export default function Dashboard({ onNavigate }) {
           soporteCorreo: { tendencia: [], casos: { caso1: 0, caso2: 0, caso3: 0, caso4: 0 }, totalTramitados: 0 },
           contactCenter: { tendencia: [], casos: { caso1: 0, caso2: 0, caso3: 0 }, totalTramitados: 0 },
           pqrs: { tendencia: [], totalTramitados: 0 },
+          mesaAyuda: { totalTramitados: 0 },
         };
       }
       const g = grouped[mesKey];
@@ -233,6 +234,8 @@ export default function Dashboard({ onNavigate }) {
 
       g.pqrs.tendencia.push({ dia, correosTramitados: r.pqrs_correos || 0 });
       g.pqrs.totalTramitados += (r.pqrs_correos || 0);
+
+      g.mesaAyuda.totalTramitados += (r.mesa_correos || 0);
     });
 
     Object.keys(grouped).forEach(mes => {
@@ -313,7 +316,8 @@ export default function Dashboard({ onNavigate }) {
   const months = sortedMonths;
   const data = allData[selectedMonth];
   if (!data) return null;
-  const { soporteCorreo, contactCenter, pqrs } = data;
+  const { soporteCorreo, contactCenter, pqrs, mesaAyuda } = data;
+  const is2025 = selectedMonth === 'RESUMEN 2025';
   const hasContactData = contactCenter.totalTramitados > 0;
   const hasPQRSData = pqrs.totalTramitados > 0;
   const hasCasosData = soporteCorreo.casos.some(c => c.value > 0);
@@ -367,7 +371,7 @@ export default function Dashboard({ onNavigate }) {
           >
             {/* KPIs */}
             <motion.div
-              className="kpi-grid"
+              className={`kpi-grid ${is2025 ? '' : 'four'}`}
               variants={containerVariants}
               initial="hidden"
               animate="visible"
@@ -379,12 +383,21 @@ export default function Dashboard({ onNavigate }) {
                 icon={<Mail size={18} />}
                 colorClass="soporte"
               />
+              {!is2025 && (
+                <KpiCard
+                  label="Contact Center"
+                  value={contactCenter.totalTramitados}
+                  days={contactCenter.tendencia.length}
+                  icon={<Headset size={18} />}
+                  colorClass="contact"
+                />
+              )}
               <KpiCard
-                label="Contact Center"
-                value={contactCenter.totalTramitados}
-                days={contactCenter.tendencia.length}
-                icon={<Headset size={18} />}
-                colorClass="contact"
+                label="Mesa de Ayuda"
+                value={mesaAyuda.totalTramitados}
+                days={soporteCorreo.tendencia.length}
+                icon={<LifeBuoy size={18} />}
+                colorClass="mesa"
               />
               <KpiCard
                 label="PQRS"
@@ -437,7 +450,14 @@ export default function Dashboard({ onNavigate }) {
                       >
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" horizontal={false} />
                         <XAxis type="number" stroke="#94a3b8" tick={{ fontSize: 14 }} />
-                        <YAxis type="category" dataKey="name" stroke="#94a3b8" tick={{ fontSize: 14 }} width={140} />
+                        <YAxis type="category" dataKey="name" stroke="#94a3b8" width={150} tick={(props) => {
+                          const { x, y, payload } = props;
+                          const item = casosSoporteData.find(c => c.name === payload.value);
+                          const col = item ? item.color : '#94a3b8';
+                          return (
+                            <text x={x} y={y} dy={4} textAnchor="end" fontSize={14} fontWeight={700} fill={col} style={{ filter: `drop-shadow(0 0 5px ${col})` }}>{payload.value}</text>
+                          );
+                        }} />
                         <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
                         <Bar dataKey="value" name="Casos" radius={[0, 6, 6, 0]} isAnimationActive animationDuration={1400} animationEasing="ease-out">
                           {casosSoporteData.map((entry, i) => (
@@ -481,6 +501,17 @@ export default function Dashboard({ onNavigate }) {
                       <AnimatedNumber value={pqrs.totalTramitados} />
                     </div>
                     <p style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Correos PQRS tramitados</p>
+                  </div>
+                </ChartCard>
+
+                {/* Tarjeta resumen Mesa de Ayuda */}
+                <ChartCard title="Mesa de Ayuda del Periodo" subtitle="Total de correos de Mesa de Ayuda" tag="Total" tagColor="emerald">
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '0.5rem' }}>
+                    <LifeBuoy size={40} color={COLORS.emerald} strokeWidth={1.5} />
+                    <div style={{ fontSize: '3.5rem', fontWeight: 800, color: COLORS.emerald, lineHeight: 1 }}>
+                      <AnimatedNumber value={mesaAyuda.totalTramitados} />
+                    </div>
+                    <p style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Correos Mesa de Ayuda</p>
                   </div>
                 </ChartCard>
               </motion.div>
@@ -672,6 +703,11 @@ export function Sidebar({ months, selectedMonth, onSelectMonth, onNavigate, acti
         <p className="sidebar-footer-text">
           Conectado a Supabase<br />
           Datos en tiempo real
+        </p>
+        <p className="sidebar-credits">
+          Desarrollado por<br />
+          <strong>Daniel Villadiego Abad</strong><br />
+          <strong>Nicolás David Dussan Quiroga</strong>
         </p>
       </div>
     </motion.aside>

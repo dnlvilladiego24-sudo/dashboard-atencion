@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vista previa — cambios dashboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+body{background:#080b15;background-image:radial-gradient(900px circle at 12% -5%,rgba(99,102,241,.10),transparent 45%),radial-gradient(800px circle at 100% 0%,rgba(34,211,238,.07),transparent 40%),radial-gradient(700px circle at 50% 110%,rgba(167,139,250,.06),transparent 45%);background-attachment:fixed;color:#f1f5f9;padding:0}
+.preview-note{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);color:#a78bfa;font-size:.8rem;padding:.6rem 1rem;text-align:center}
+.screen{padding:1.5rem 2rem;max-width:1100px;margin:0 auto}
+.screen-title{font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;color:#64748b;margin:2rem 0 1rem;border-bottom:1px solid rgba(255,255,255,.07);padding-bottom:.5rem}
+.kpi-grid{display:grid;gap:1.25rem;margin-bottom:1.5rem}
+.kpi-grid.four{grid-template-columns:repeat(4,1fr)}
+.kpi-grid.three{grid-template-columns:repeat(3,1fr)}
+.kpi-card{background:linear-gradient(160deg,rgba(255,255,255,.025),rgba(255,255,255,0) 60%),#141a28;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:1.35rem 1.5rem;position:relative;overflow:hidden}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi-card.soporte::before{background:linear-gradient(90deg,#6366f1,#22d3ee)}
+.kpi-card.contact::before{background:linear-gradient(90deg,#a78bfa,#fb7185)}
+.kpi-card.mesa::before{background:linear-gradient(90deg,#34d399,#22d3ee)}
+.kpi-card.pqrs::before{background:linear-gradient(90deg,#fbbf24,#34d399)}
+.kpi-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.kpi-label{font-size:.8rem;font-weight:500;color:#94a3b8;text-transform:uppercase;letter-spacing:.03em}
+.kpi-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.kpi-icon.soporte{background:rgba(99,102,241,.12);color:#6366f1}
+.kpi-icon.contact{background:rgba(167,139,250,.12);color:#a78bfa}
+.kpi-icon.mesa{background:rgba(52,211,153,.12);color:#34d399}
+.kpi-icon.pqrs{background:rgba(251,191,36,.12);color:#fbbf24}
+.kpi-value{font-size:2.25rem;font-weight:800;line-height:1;margin-bottom:.35rem;color:var(--neon);text-shadow:0 0 10px var(--neon-dim)}
+.kpi-sub{font-size:.75rem;color:#64748b}
+.charts-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem}
+.chart-card{background:linear-gradient(160deg,rgba(255,255,255,.02),rgba(255,255,255,0) 55%),#141a28;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:1.35rem 1.5rem}
+.chart-card.full{grid-column:1/-1}
+.chart-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem}
+.chart-title{font-size:.85rem;font-weight:600;color:var(--neon);text-shadow:0 0 10px var(--neon-dim)}
+.chart-sub{font-size:.7rem;color:#64748b;margin-top:2px}
+.tag{font-size:.65rem;font-weight:500;padding:.2rem .5rem;border-radius:4px;text-transform:uppercase;letter-spacing:.04em}
+.tag.indigo{background:rgba(99,102,241,.12);color:#6366f1}
+.tag.emerald{background:rgba(52,211,153,.12);color:#34d399}
+.tag.violet{background:rgba(167,139,250,.12);color:#a78bfa}
+.total-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:1rem 0}
+.total-num{font-size:3.5rem;font-weight:800;line-height:1}
+.sidebar-mini{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
+.month-chip{display:flex;align-items:center;gap:.5rem;padding:.4rem .8rem;border-radius:10px;background:#141a28;border:1px solid rgba(255,255,255,.07);font-size:.8rem;color:#94a3b8}
+.dot{width:9px;height:9px;border-radius:50%}
+.tooltip{display:inline-block;background:rgba(8,11,21,.92);border:1px solid var(--neon);box-shadow:0 0 22px var(--neon-dim);border-radius:10px;padding:12px 14px;font-size:.8rem;margin-top:.75rem}
+.tooltip b{display:block;color:#fff;margin-bottom:6px;text-shadow:0 0 8px var(--neon)}
+</style>
+</head>
+<body>
+<div class="preview-note">Vista previa con datos de ejemplo — así se ven los cambios. La app real lee los datos desde Supabase.</div>
+
+<!-- ============ PANTALLA 2026 ============ -->
+<div class="screen" style="--neon:#a78bfa;--neon-dim:rgba(167,139,250,.35)">
+  <div class="screen-title">Mayo 2026 — 4 KPIs (incluye Mesa de Ayuda junto a Contact Center)</div>
+
+  <div class="sidebar-mini">
+    <span class="month-chip"><span class="dot" style="background:#38bdf8;box-shadow:0 0 8px #38bdf8"></span>ENERO</span>
+    <span class="month-chip"><span class="dot" style="background:#f472b6;box-shadow:0 0 8px #f472b6"></span>FEBRERO</span>
+    <span class="month-chip"><span class="dot" style="background:#4ade80;box-shadow:0 0 8px #4ade80"></span>MARZO</span>
+    <span class="month-chip"><span class="dot" style="background:#fb923c;box-shadow:0 0 8px #fb923c"></span>ABRIL</span>
+    <span class="month-chip" style="color:#a78bfa;border-color:#a78bfa"><span class="dot" style="background:#a78bfa;box-shadow:0 0 8px #a78bfa"></span>MAYO</span>
+    <span class="month-chip"><span class="dot" style="background:#facc15;box-shadow:0 0 8px #facc15"></span>JUNIO</span>
+  </div>
+
+  <div class="kpi-grid four">
+    <div class="kpi-card soporte"><div class="kpi-header"><span class="kpi-label">Soporte Correo</span><div class="kpi-icon soporte">&#9993;</div></div><div class="kpi-value">2.435</div><div class="kpi-sub">Correos tramitados · 31 dias</div></div>
+    <div class="kpi-card contact"><div class="kpi-header"><span class="kpi-label">Contact Center</span><div class="kpi-icon contact">&#9742;</div></div><div class="kpi-value">70</div><div class="kpi-sub">Correos tramitados · 31 dias</div></div>
+    <div class="kpi-card mesa"><div class="kpi-header"><span class="kpi-label">Mesa de Ayuda</span><div class="kpi-icon mesa">&#9784;</div></div><div class="kpi-value">5</div><div class="kpi-sub">Correos tramitados · 31 dias</div></div>
+    <div class="kpi-card pqrs"><div class="kpi-header"><span class="kpi-label">PQRS</span><div class="kpi-icon pqrs">&#9888;</div></div><div class="kpi-value">258</div><div class="kpi-sub">Correos tramitados · 31 dias</div></div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card full">
+      <div class="chart-head"><div><div class="chart-title">Tendencia Diaria: Soporte Correo</div><div class="chart-sub">Volumen por dia · color del mes</div></div><span class="tag violet">Area</span></div>
+      <svg viewBox="0 0 760 220" width="100%" height="200">
+        <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stop-color="#a78bfa" stop-opacity="0.4"/><stop offset="95%" stop-color="#a78bfa" stop-opacity="0"/></linearGradient>
+        <filter id="glow"><feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#a78bfa"/></filter></defs>
+        <path d="M0,170 L60,120 L120,150 L180,80 L240,40 L300,110 L360,90 L420,60 L480,130 L540,70 L600,100 L660,50 L720,90 L760,75 L760,220 L0,220 Z" fill="url(#g1)"/>
+        <path d="M0,170 L60,120 L120,150 L180,80 L240,40 L300,110 L360,90 L420,60 L480,130 L540,70 L600,100 L660,50 L720,90 L760,75" fill="none" stroke="#a78bfa" stroke-width="2.5" filter="url(#glow)"/>
+      </svg>
+      <div class="tooltip"><b>Dia 10</b>
+        <span style="color:#a78bfa;text-shadow:0 0 8px #a78bfa">Total Correos: 200</span><br>
+        <span style="color:#22d3ee;text-shadow:0 0 8px #22d3ee;font-size:.75rem">Credenciales: 100</span>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Contact Center</div><div class="chart-sub">Correos por dia</div></div><span class="tag violet">Barras</span></div>
+      <svg viewBox="0 0 360 200" width="100%" height="180">
+        <g filter="url(#glow)">
+        <rect x="40" y="120" width="40" height="60" rx="4" fill="#a78bfa"/>
+        <rect x="120" y="80" width="40" height="100" rx="4" fill="#a78bfa"/>
+        <rect x="200" y="140" width="40" height="40" rx="4" fill="#a78bfa"/>
+        <rect x="280" y="100" width="40" height="80" rx="4" fill="#a78bfa"/>
+        </g>
+      </svg>
+    </div>
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Mesa de Ayuda</div><div class="chart-sub">Total del periodo</div></div><span class="tag emerald">Total</span></div>
+      <div class="total-card"><div style="font-size:40px;color:#34d399">&#9784;</div><div class="total-num" style="color:#34d399">5</div><div style="color:#94a3b8;font-size:.85rem">Correos Mesa de Ayuda</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PANTALLA 2025 ============ -->
+<div class="screen" style="--neon:#818cf8;--neon-dim:rgba(129,140,248,.35)">
+  <div class="screen-title">2025 — Total anual (Mesa de Ayuda reemplaza a Contact Center · 3 KPIs)</div>
+
+  <div class="kpi-grid three">
+    <div class="kpi-card soporte"><div class="kpi-header"><span class="kpi-label">Soporte Correo</span><div class="kpi-icon soporte">&#9993;</div></div><div class="kpi-value" style="--neon:#818cf8;--neon-dim:rgba(129,140,248,.35)">20.000</div><div class="kpi-sub">Correos tramitados</div></div>
+    <div class="kpi-card mesa"><div class="kpi-header"><span class="kpi-label">Mesa de Ayuda</span><div class="kpi-icon mesa">&#9784;</div></div><div class="kpi-value" style="--neon:#818cf8;--neon-dim:rgba(129,140,248,.35)">3.000</div><div class="kpi-sub">Correos tramitados</div></div>
+    <div class="kpi-card pqrs"><div class="kpi-header"><span class="kpi-label">PQRS</span><div class="kpi-icon pqrs">&#9888;</div></div><div class="kpi-value" style="--neon:#818cf8;--neon-dim:rgba(129,140,248,.35)">598</div><div class="kpi-sub">Correos tramitados</div></div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card full">
+      <div class="chart-head"><div><div class="chart-title">Desglose por Tipo de Caso</div><div class="chart-sub">Cada etiqueta del color de su barra</div></div><span class="tag indigo">Barras</span></div>
+      <svg viewBox="0 0 760 200" width="100%" height="180">
+        <text x="150" y="35" text-anchor="end" font-size="14" font-weight="700" fill="#22d3ee" style="filter:drop-shadow(0 0 5px #22d3ee)">Credenciales</text>
+        <rect x="160" y="22" width="520" height="22" rx="4" fill="#22d3ee"/>
+        <text x="150" y="83" text-anchor="end" font-size="14" font-weight="700" fill="#fbbf24" style="filter:drop-shadow(0 0 5px #fbbf24)">Ctas. Bloqueadas</text>
+        <rect x="160" y="70" width="280" height="22" rx="4" fill="#fbbf24"/>
+        <text x="150" y="131" text-anchor="end" font-size="14" font-weight="700" fill="#fb7185" style="filter:drop-shadow(0 0 5px #fb7185)">Ctas. Eliminadas</text>
+        <rect x="160" y="118" width="280" height="22" rx="4" fill="#fb7185"/>
+        <text x="150" y="179" text-anchor="end" font-size="14" font-weight="700" fill="#34d399" style="filter:drop-shadow(0 0 5px #34d399)">Gratuidad</text>
+        <rect x="160" y="166" width="20" height="22" rx="4" fill="#34d399"/>
+      </svg>
+    </div>
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Mesa de Ayuda del Periodo</div><div class="chart-sub">Total de correos</div></div><span class="tag emerald">Total</span></div>
+      <div class="total-card"><div style="font-size:40px;color:#34d399">&#9784;</div><div class="total-num" style="color:#34d399">3.000</div><div style="color:#94a3b8;font-size:.85rem">Correos Mesa de Ayuda</div></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">PQRS del Periodo</div><div class="chart-sub">Total</div></div><span class="tag indigo">Total</span></div>
+      <div class="total-card"><div style="font-size:40px;color:#fbbf24">&#9888;</div><div class="total-num" style="color:#fbbf24">598</div><div style="color:#94a3b8;font-size:.85rem">Correos PQRS</div></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

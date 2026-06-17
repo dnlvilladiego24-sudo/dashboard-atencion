@@ -25,6 +25,9 @@ CREATE TABLE IF NOT EXISTS registros_diarios (
   
   -- PQRS
   pqrs_correos INTEGER DEFAULT 0,
+
+  -- Mesa de Ayuda
+  mesa_correos INTEGER DEFAULT 0,
   
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),

@@ -262,6 +262,20 @@ body {
   line-height: 1.6;
 }
 
+.sidebar-credits {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 0.68rem;
+  color: var(--text-tertiary);
+  line-height: 1.7;
+}
+
+.sidebar-credits strong {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
 /* Main Content */
 .main-content {
   flex: 1;
@@ -372,6 +386,10 @@ body {
   margin-bottom: 1.5rem;
 }
 
+.kpi-grid.four {
+  grid-template-columns: repeat(4, 1fr);
+}
+
 .kpi-card {
   background: linear-gradient(160deg, rgba(255,255,255,0.025), rgba(255,255,255,0) 60%), var(--bg-card);
   border: 1px solid var(--border-subtle);
@@ -395,6 +413,7 @@ body {
 .kpi-card.soporte::before { background: linear-gradient(90deg, var(--accent-indigo), var(--accent-cyan)); }
 .kpi-card.contact::before { background: linear-gradient(90deg, var(--accent-violet), var(--accent-rose)); }
 .kpi-card.pqrs::before { background: linear-gradient(90deg, var(--accent-amber), var(--accent-emerald)); }
+.kpi-card.mesa::before { background: linear-gradient(90deg, var(--accent-emerald), var(--accent-cyan)); }
 
 .kpi-card:hover {
   border-color: var(--border-active);
@@ -428,6 +447,7 @@ body {
 .kpi-icon.soporte { background: rgba(99, 102, 241, 0.12); color: var(--accent-indigo); }
 .kpi-icon.contact { background: rgba(167, 139, 250, 0.12); color: var(--accent-violet); }
 .kpi-icon.pqrs { background: rgba(251, 191, 36, 0.12); color: var(--accent-amber); }
+.kpi-icon.mesa { background: rgba(52, 211, 153, 0.12); color: var(--accent-emerald); }
 
 .kpi-value {
   font-size: 2.25rem;
@@ -514,6 +534,7 @@ body {
 .chart-tag.violet { background: rgba(167,139,250,0.12); color: var(--accent-violet); }
 .chart-tag.amber { background: rgba(251,191,36,0.12); color: var(--accent-amber); }
 .chart-tag.rose { background: rgba(251,113,133,0.12); color: var(--accent-rose); }
+.chart-tag.emerald { background: rgba(52,211,153,0.12); color: var(--accent-emerald); }
 
 .chart-area {
   width: 100%;
@@ -562,6 +583,9 @@ body {
   .charts-grid {
     grid-template-columns: 1fr;
   }
+  .kpi-grid.four {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 900px) {
@@ -571,7 +595,8 @@ body {
   .main-content {
     margin-left: 0;
   }
-  .kpi-grid {
+  .kpi-grid,
+  .kpi-grid.four {
     grid-template-columns: 1fr;
   }
   .form-row {
@@ -654,6 +679,7 @@ body {
 .form-section-header.soporte { color: var(--accent-indigo); }
 .form-section-header.contact { color: var(--accent-violet); }
 .form-section-header.pqrs { color: var(--accent-amber); }
+.form-section-header.mesa { color: var(--accent-emerald); }
 
 .edit-badge {
   font-size: 0.7rem;
